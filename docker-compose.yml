@@ -1,4 +1,4 @@
-version: '3.8'
+version : '3.8'
 
 services:
   
@@ -112,8 +112,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-  version: '3.8'
-
+  
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
