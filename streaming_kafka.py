@@ -82,22 +82,67 @@ def fetch_and_send_stock_price():
     ticker_symbol = 'AAPL'  # Example ticker symbol
     while True:
         try:
-            # Dummy price data for illustration; replace with actual fetching logic
+            # Fetch the most recent day's data with a 5-minute interval
             ticker = yf.Ticker(ticker_symbol)
-            hist = ticker.history(period="1d", interval="1m")  # Fetch data at a 1-minute interval for the last day
+            hist = ticker.history(period="1d", interval="5m")
             if not hist.empty:
-                latest_price = hist['Close'].iloc[-1]  # Get the latest closing price
+                # Get the opening price of the most recent interval
+                open_price = hist['Open'].iloc[-1]
+                # Get the closing price of the most recent interval
+                latest_price = hist['Close'].iloc[-1]
                 
-                # Construct the message with the real price
-                message = {'symbol': ticker_symbol, 'price': float(latest_price)}
+                # Calculate price movement
+                price_movement = latest_price - open_price
+                
+                # Construct the message with the real price and movement
+                message = {
+                    'symbol': ticker_symbol, 
+                    'latest_price': float(latest_price),
+                    'price_movement': float(price_movement)
+                }
+                
+                # Send the message to Kafka
+                producer.produce('stock-trades', key=str(ticker_symbol), value=json.dumps(message), callback=delivery_report)
+                producer.poll(0)  # Serve delivery callback queue
+                
+                print(f"Sent {ticker_symbol} price and movement to Kafka: {latest_price}, {price_movement}")
+            else:
+                print(f"No data fetched for {ticker_symbol}.")
             
-            # Send the message to Kafka
-            producer.produce('stock-trades', key=str(ticker_symbol), value=json.dumps(message), callback=delivery_report)
-            producer.poll(0)  # Serve delivery callback queue
-            
-            print(f"Sent {ticker_symbol} price to Kafka: {latest_price}")
-            time.sleep(60)  # Fetch every 60 seconds
+            time.sleep(20)  # Fetch every 5 minutes
         except Exception as e:
             print(f"Error fetching/sending stock price: {e}")
 
-fetch_and_send_stock_price()
+# fetch_and_send_stock_price()
+
+def fetch_and_stream_historical_prices():
+    ticker_symbol = 'AAPL'  # Example ticker symbol
+    try:
+        # Fetch historical data for the last 2 years
+        ticker = yf.Ticker(ticker_symbol)
+        hist = ticker.history(period="2y", interval="1d")
+        
+        for date, row in hist.iterrows():
+            # Get the closing price for the day
+            closing_price = row['Close']
+            
+            # Construct the message with the price and date
+            message = {
+                'symbol': ticker_symbol, 
+                'date': str(date.date()), 
+                'closing_price': float(closing_price)
+            }
+            
+            # Simulate sending the message to Kafka
+            producer.produce('stock-trades', key=str(date.date()), value=json.dumps(message), callback=delivery_report)
+            producer.poll(0)  # Serve delivery callback queue
+            
+            print(f"Sent {ticker_symbol} closing price for {date.date()} to Kafka: {closing_price}")
+            
+            # To mimic live streaming, introduce a delay between sending each day's price
+            time.sleep(8)  # Delay of 1 second for demonstration; adjust as needed
+            
+    except Exception as e:
+        print(f"Error fetching/sending historical stock prices: {e}")
+
+fetch_and_stream_historical_prices()
