@@ -120,7 +120,7 @@ def fetch_and_stream_historical_prices():
     try:
         # Fetch historical data for the last 2 years
         ticker = yf.Ticker(ticker_symbol)
-        hist = ticker.history(period="2y", interval="1d")
+        hist = ticker.history(period="1y", interval="1d")
         
         for date, row in hist.iterrows():
             # Get the closing price for the day
@@ -140,7 +140,7 @@ def fetch_and_stream_historical_prices():
             print(f"Sent {ticker_symbol} closing price for {date.date()} to Kafka: {closing_price}")
             
             # To mimic live streaming, introduce a delay between sending each day's price
-            time.sleep(8)  # Delay of 1 second for demonstration; adjust as needed
+            time.sleep(2)  # Delay of 1 second for demonstration; adjust as needed
             
     except Exception as e:
         print(f"Error fetching/sending historical stock prices: {e}")
