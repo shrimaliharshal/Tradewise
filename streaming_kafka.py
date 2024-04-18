@@ -120,7 +120,7 @@ def fetch_and_stream_historical_prices():
     try:
         # Fetch historical data for the last 2 years
         ticker = yf.Ticker(ticker_symbol)
-        hist = ticker.history(period="1y", interval="1d")
+        hist = ticker.history(period="2y", interval="1d")
         
         for date, row in hist.iterrows():
             # Get the closing price for the day
