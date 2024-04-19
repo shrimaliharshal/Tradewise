@@ -30,7 +30,7 @@ def consume_prices():
             stock_data = json.loads(msg.value().decode('utf-8'))
             new_row = {'Date': pd.to_datetime(stock_data['date']), 'Close': stock_data['closing_price']}
             data = pd.concat([data, pd.DataFrame([new_row])], ignore_index=True)
-            if len(data) >= 30:  # Check if we have at least 30 data points
+            if len(data) >= 10:  # Check if we have at least 30 data points
                 yield data
     finally:
         consumer.close()
