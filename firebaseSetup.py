@@ -38,14 +38,14 @@ for _ in range(10000):
     email = fake.email()
     bloom_filter.add(email)
 
-def populate_bloom_filter():
-    # Code to fetch all user emails from Firebase and add to the Bloom filter
-    all_users = auth.list_users()
-    for user in all_users:
-        bloom_filter.add(user.email)
+# def populate_bloom_filter():
+#     # Code to fetch all user emails from Firebase and add to the Bloom filter
+#     all_users = auth.list_users()
+#     for user in all_users:
+#         bloom_filter.add(user.email)
 
 # Call this function when your app starts
-populate_bloom_filter()
+# populate_bloom_filter()
 
 
 def sign_up():
