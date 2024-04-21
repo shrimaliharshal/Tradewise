@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objs as go
 from prediction import predict_stock_prices, spark,F  # Ensure your prediction function and Spark session are defined
+import streaming_kafka
 def creds_entered():
     if st.session_state['user'].strip() =="admin" and st.session_state["passwd"].strip() =="admin":
         st.session_state['authenticated'] = True
@@ -28,23 +29,9 @@ def authenticate_user():
             return False
 
 
-       
-def main():
-    if authenticate_user():
-        st.title('Stock Price Prediction Dashboard')
-
-        # # User input for the ticker symbol
-        # ticker = st.text_input("Enter the stock ticker symbol (e.g., AAPL, TSLA):", "AAPL")
-
-        # Available tickers dropdown
-        available_tickers = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'GL', 'AMZN','NVDA']  # Add more tickers as needed
-        ticker = st.selectbox("Select the stock ticker:", available_tickers)
-
-        
-        if st.button("Predict Stock Prices"):
-            # Call your prediction function
-            try:
-                # predictions = predict_stock_prices(ticker)
+def plot_it():
+    # predictions = predict_stock_prices(ticker)
+            try:    # streaming_kafka.fetch_and_stream_historical_prices()
                 predictions, training_data = predict_stock_prices(ticker)
                 training_data = training_data.filter(F.col("Date") > '2022-04-11') 
                 training_data_df = training_data.toPandas()
@@ -83,6 +70,22 @@ def main():
                 st.plotly_chart(fig)
             except Exception as e:
                 st.error(f"Failed to predict stock prices: {e}")
+       
+def main():
+    if authenticate_user():
+        st.title('Stock Price Prediction Dashboard')
+
+        # # User input for the ticker symbol
+        # ticker = st.text_input("Enter the stock ticker symbol (e.g., AAPL, TSLA):", "AAPL")
+
+        # Available tickers dropdown
+        available_tickers = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'GL', 'AMZN','NVDA']  # Add more tickers as needed
+        ticker = st.selectbox("Select the stock ticker:", available_tickers)
+
+        
+        if st.button("Predict Stock Prices"):
+            # Call your prediction function
+            plot_it()
 
 if __name__ == "__main__":
     main()
