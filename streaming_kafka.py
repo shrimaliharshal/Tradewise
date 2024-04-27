@@ -139,7 +139,7 @@ def fetch_and_stream_historical_prices(ticker_symbol):
             }
             
             # Send the message to Kafka
-            producer.produce('stock-trades', key=str(date.date()), value=json.dumps(message), callback=delivery_report)
+            producer.produce(f'stock-trades-{ticker_symbol}', key=str(date.date()), value=json.dumps(message), callback=delivery_report)
             producer.poll(0)  # Serve delivery callback queue
             
             print(f"Sent {ticker_symbol} closing price for {date.date()} to Kafka: {closing_price}")
