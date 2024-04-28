@@ -150,4 +150,4 @@ def fetch_and_stream_historical_prices(ticker_symbol):
     except Exception as e:
         print(f"Error fetching/sending historical stock prices: {e}")
 
-fetch_and_stream_historical_prices("GOOG")
+fetch_and_stream_historical_prices("AAPL")

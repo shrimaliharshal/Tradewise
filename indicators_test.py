@@ -5,14 +5,14 @@ import streamlit as st
 import json
 from confluent_kafka import Consumer, KafkaError
 
-def consume_prices():
+def consume_prices(consumer):
     conf = {
         'bootstrap.servers': 'localhost:9092',
         'group.id': 'mygroup',
         'auto.offset.reset': 'earliest'
     }
-    consumer = Consumer(**conf)
-    consumer.subscribe(['stock-trades'])
+    # consumer = Consumer(**conf)
+    # consumer.subscribe([f'stock-trades-{ticker}'])
     data = pd.DataFrame(columns=['Date', 'Close'])
     
     try:
@@ -107,7 +107,7 @@ def main():
         placeholder_macd = st.empty()
         placeholder_rsi = st.empty()
 
-        for data in consume_prices():
+        for data in consume_prices(consumer):
             df = calculate_indicators(data)  # Calculate indicators
             plot_data(df, figs)  # Update plots with new data
 

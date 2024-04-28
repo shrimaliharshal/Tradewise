@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objs as go
 from prediction import predict_stock_prices, spark,F  # Ensure your prediction function and Spark session are defined
-import streaming_kafka
+# import streaming_kafka
 def creds_entered():
     if st.session_state['user'].strip() =="admin" and st.session_state["passwd"].strip() =="admin":
         st.session_state['authenticated'] = True
@@ -29,7 +29,7 @@ def authenticate_user():
             return False
 
 
-def plot_it():
+def plot_it(ticker):
     # predictions = predict_stock_prices(ticker)
             try:    # streaming_kafka.fetch_and_stream_historical_prices()
                 predictions, training_data = predict_stock_prices(ticker)
@@ -85,7 +85,7 @@ def main():
         
         if st.button("Predict Stock Prices"):
             # Call your prediction function
-            plot_it()
+            plot_it(ticker)
 
 if __name__ == "__main__":
     main()
