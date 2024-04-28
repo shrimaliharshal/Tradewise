@@ -115,8 +115,13 @@ def fetch_and_send_stock_price():
 
 # fetch_and_send_stock_price()
 
-def fetch_and_stream_historical_prices():
-    ticker_symbol = 'AAPL'  # Example ticker symbol
+def fetch_and_stream_historical_prices(ticker_symbol):
+    """
+    Fetches and streams historical stock prices for a given ticker symbol.
+
+    Args:
+    ticker_symbol (str): The stock ticker symbol for which to fetch historical prices.
+    """
     try:
         # Fetch historical data for the last 2 years
         ticker = yf.Ticker(ticker_symbol)
@@ -128,21 +133,21 @@ def fetch_and_stream_historical_prices():
             
             # Construct the message with the price and date
             message = {
-                'symbol': ticker_symbol, 
-                'date': str(date.date()), 
+                'symbol': ticker_symbol,
+                'date': str(date.date()),
                 'closing_price': float(closing_price)
             }
             
-            # Simulate sending the message to Kafka
-            producer.produce('stock-trades', key=str(date.date()), value=json.dumps(message), callback=delivery_report)
+            # Send the message to Kafka
+            producer.produce(f'stock-trades-{ticker_symbol}', key=str(date.date()), value=json.dumps(message), callback=delivery_report)
             producer.poll(0)  # Serve delivery callback queue
             
             print(f"Sent {ticker_symbol} closing price for {date.date()} to Kafka: {closing_price}")
             
             # To mimic live streaming, introduce a delay between sending each day's price
-            time.sleep(2)  # Delay of 1 second for demonstration; adjust as needed
+            time.sleep(2)  # Delay of 2 seconds for demonstration; adjust as needed
             
     except Exception as e:
         print(f"Error fetching/sending historical stock prices: {e}")
 
-fetch_and_stream_historical_prices()
+fetch_and_stream_historical_prices("AAPL")

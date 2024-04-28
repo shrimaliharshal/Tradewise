@@ -38,6 +38,7 @@ for _ in range(10000):
     email = fake.email()
     bloom_filter.add(email)
 
+
 # def populate_bloom_filter():
 #     # Code to fetch all user emails from Firebase and add to the Bloom filter
 #     all_users = auth.list_users()
@@ -47,33 +48,36 @@ for _ in range(10000):
 # Call this function when your app starts
 # populate_bloom_filter()
 
+# Optionally add patterned emails
+for i in range(100):
+    email = f"user{i}@example.com"
+    bloom_filter.add(email)
+
+def check_email():
+    # Check if 'temp_email' is initialized in session state; if not, initialize with an empty string
+    if 'temp_email' not in st.session_state:
+        st.session_state['temp_email'] = ''
+    
+    email = st.session_state['temp_email']
+    if email:  # Proceed only if email is not empty
+        if email in bloom_filter:
+            st.error("Email may already exist. Please use a different email.")
+            st.write("Debug: Email is potentially in the Bloom filter.")
+        else:
+            st.success("This email is not in the Bloom filter (new user).")
 
 def sign_up():
     st.subheader("Sign Up")
-    email = st.text_input("Email")
+    email = st.text_input("Email", key='temp_email', on_change=check_email)  # Ensure the key matches the one used in check_email
     password = st.text_input("Password", type="password")
     
     if st.button("Sign Up"):
-        if email:  # Check if email field is not empty
-            # Check if the email might exist in the Bloom filter
-            if email in bloom_filter:
-                st.error("Email may already exist. Please use a different email.")
-                st.write("Debug: Email is potentially in the Bloom filter.")
-            else:
-                # If not in Bloom filter, attempt to create the user in Firebase
-                try:
-                    user = auth.create_user_with_email_and_password(email, password)
-                    st.success("You have successfully created an account")
-                    bloom_filter.add(email)  # Add email to Bloom filter
-                    st.write("Debug: Email added to the Bloom filter.")
-                except Exception as e:
-                    # Improved error handling
-                    error_json = json.loads(e.args[1])
-                    error_message = error_json['error']['message']
-                    st.error(f"Failed to create user account: {error_message}")
-        else:
-            st.error("Please enter an email address.")
-
+        # Using 'temp_email' from session state to avoid discrepancies
+        email = st.session_state.get('temp_email', '')
+        if email and email not in bloom_filter:
+            st.success("Proceed to create the new user")
+            # Here you can add code to create the user in Firebase or handle other logic
+ 
 def login():
     st.subheader("Login")
     username = st.text_input("Email")
@@ -82,7 +86,7 @@ def login():
     if st.button("Login"):
         try:
             user = auth.sign_in_with_email_and_password(username, password)
-            st.session_state['user'] = user
+            st.session_state['user'] = user 
             st.success("Logged in successfully")
         except:
             st.error("Failed to login, check your email and password")
