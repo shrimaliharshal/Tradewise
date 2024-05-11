@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objs as go
-from prediction import predict_stock_prices, spark,F  # Ensure your prediction function and Spark session are defined
-# import streaming_kafka
+from prediction import predict_stock_prices, spark,F  
 def creds_entered():
     if st.session_state['user'].strip() =="admin" and st.session_state["passwd"].strip() =="admin":
         st.session_state['authenticated'] = True
@@ -79,12 +78,12 @@ def main():
         # ticker = st.text_input("Enter the stock ticker symbol (e.g., AAPL, TSLA):", "AAPL")
 
         # Available tickers dropdown
-        available_tickers = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'GL', 'AMZN','NVDA']  # Add more tickers as needed
+        available_tickers = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'GL', 'AMZN','NVDA']  #  more tickers can be added
         ticker = st.selectbox("Select the stock ticker:", available_tickers)
 
         
         if st.button("Predict Stock Prices"):
-            # Call your prediction function
+            
             plot_it(ticker)
 
 if __name__ == "__main__":
