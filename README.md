@@ -35,3 +35,5 @@ OpenAI Embeddings: These are used to convert text into numerical vectors that re
 FAISS: An efficient similarity search and clustering of dense vectors. It allows quick retrieval of items that are similar to a queried item.
 LangChain: A tool for loading and processing unstructured text data from URLs.
 Streamlit: An open-source app framework used primarily for machine learning and data science projects. It is used here to create the web interface for StockBot.
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/shrimaliharshal/Tradewise)
